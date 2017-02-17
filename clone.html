@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>repl.it</title>
+        <style>
+          .template {display: none;}
+          
+          .towedVehicle {
+            background-color: silver;
+            border: solid 5px blue;
+            padding: 5px;
+            margin-bottom: 5px;
+          }
+          
+          .towedVehicle span,div {
+            font-family: arial, Sans-Serif;
+          }
+          
+        </style>
+
+    </head>
+    <body>
+      <div id="towedVehicleTemplate" class="towedVehicle template">
+        <h2 class="plate"></h2>
+        <div>
+          Inventory Number: <span class="inventory_number"></span><br>
+          Color: <span class="color"></span><br>
+          Tow Date: <span class="tow_date"></span><br>
+          Tow Facility Phone: <span class="tow_facility_phone"></span><br>
+          Tow To Address:  <span class="towed_to_address"></span> <a class="mapLink">Map</a><br>
+        </div>
+      </div>
+      
+      <div id="results">
+        
+      </div>
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+      <script>
+        
+        
+        var url = "https://data.cityofchicago.org/resource/rp42-fxjt.json";
+        $.ajax({
+          url: url,
+          method: 'GET',
+          data: { color: "BLK" , make: "FORD"}
+        }).done(function(data) {
+          
+          var clone;
+          
+          $.each(data, function (i,v) {
+            clone = $("#towedVehicleTemplate").clone();
+            
+            console.log(clone);
+            clone.attr("id",v.plate);
+            clone.removeClass("template");
+            
+            clone.find(".plate").text(v.plate)
+            clone.find(".color").text(v.color);
+            clone.find(".tow_date").text(v.tow_date);
+            clone.find(".tow_facility_phone").text(v.tow_facility_phone);
+            clone.find(".tow_date").text(v.tow_date);
+            clone.find(".towed_to_address").text(v.towed_to_address);
+            clone.find(".mapLink").attr("href", "https://www.google.com/maps/place/" + v.towed_to_address);
+            
+            $("#results").append(clone);
+          })
+
+        }).fail(function(err) {
+          throw err;
+        });
+        
+        
+      </script>
+
+
+    </body>
+</html>
