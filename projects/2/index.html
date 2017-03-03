@@ -75,6 +75,8 @@
             }).done (function (data) {
               console.log(data);
               $("#output").append("<br><h2>Stop Predictions</h2>");
+            
+             $("#results").empty() ;
              
               $.each(data["bustime-response"]["prd"], function(i,v) {
                   var html = "<div id= text><h3>Stop Name: " + v.stpnm + "</h3><h3>Direction: " + v.rtdir + 
