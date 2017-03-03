@@ -2,42 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>jQuery.parseXML demo</title>
+  <title>CTA Bus Finder</title>
   <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  
+  <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+   
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    <style>
+      #text{border-radius: 15px; border: 2px dashed black; background-color: red; width: 600px;}
+     
+    </style>
 </head>
 <body>
 
+
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+  <header class="mdl-layout__header">
+    <div class="mdl-layout__header-row">
+
+      <span class="mdl-layout-title">All of the busses you need if you go to lane tech.</span>
+
+      <div id="mdl-layout-spacer"></div>
+
+      
+    </div>
+  </header>
+
+  <main class="mdl-layout__content">
+    <div class="page-content">
+      
+      <br>
+
+      <select name="Stops" id="stopChoice">
+        <option value="8417">Western (Northbound)</option>
+        <option value="8195">Western (Southbound)</option>
+        <option value="12527">Addison (Eastbound)</option>
+        <option value="12569">Addison (Westbound)</option>
+      </select>
+
+      <button type="button" onclick="myFunction();" >Find my Bus!</button>
+
+      <br>
+
+     <center><div id = "results"></div></center>
+
+    </div>
+  </main>
+</div>
  
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
       <script>
+      
+      function myFunction() {
         $(function() {
           
+          $("#output").html("");
           
           var apiPassThruUrl = "https://polar-garden-75406.herokuapp.com/apiPassThru.php";
-          
-          var apiEndpoint = "http://ctabustracker.com/bustime/api/v2/getroutes";
-          
+            
+            var apiEndpoint = "http://ctabustracker.com/bustime/api/v2/getpredictions";
           
           $.ajax({
               url: apiPassThruUrl,
               dataType: "json",
               method: 'GET',
               data: {"apiEndpoint": apiEndpoint,
-                      "key" : "gkaQ23znYPJa48MfEGiWN7Rmx",
+                      "key" : "R8ddnuEYzJvYppDLAFpRWbh9e",
+                      "stpid" : $("#stopChoice").val(),
                       "format":"json"}
             }).done (function (data) {
               console.log(data);
-              $("body").append("<h1>Bus Routes</h1>");
+              $("#output").append("<br><h2>Stop Predictions</h2>");
              
-              $.each(data["bustime-response"]["routes"], function(i,v) {
-                  $("body").append("Route #" + v.rt + ", " + v.rtnm + "<br>");
-                
-              })
+              $.each(data["bustime-response"]["prd"], function(i,v) {
+                  var html = "<div id= text><h3>Stop Name: " + v.stpnm + "</h3><h3>Direction: " + v.rtdir + 
+                  "</h3><h3>Vehicle ID: " + v.vid+ "</h3>" + "<h3>Distance Away: " + v.dstp + 
+                  " feet</h3><h3>Minutes Away: " + v.prdctdn + "</h3></div><br>";
+                  $("#results").append(html);
+              });
 
             });
-        });
             
-  
+        });
+      }
 </script>
  
 </body>

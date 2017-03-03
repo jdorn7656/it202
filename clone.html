@@ -1,80 +1,92 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width">
-        <title>repl.it</title>
-        <style>
-          .template {display: none;}
-          
-          .towedVehicle {
-            background-color: silver;
-            border: solid 5px blue;
-            padding: 5px;
-            margin-bottom: 5px;
-          }
-          
-          .towedVehicle span,div {
-            font-family: arial, Sans-Serif;
-          }
-          
-        </style>
-
-    </head>
-    <body>
-      <div id="towedVehicleTemplate" class="towedVehicle template">
-        <h2 class="plate"></h2>
-        <div>
-          Inventory Number: <span class="inventory_number"></span><br>
-          Color: <span class="color"></span><br>
-          Tow Date: <span class="tow_date"></span><br>
-          Tow Facility Phone: <span class="tow_facility_phone"></span><br>
-          Tow To Address:  <span class="towed_to_address"></span> <a class="mapLink">Map</a><br>
-        </div>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>jQuery.parseXML demo</title>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<style>
+  h2 {
+    color: black;
+    font-size: 32px;
+    font-family:times;
+  }
+body {
+  color:black;
+  font-size: 24px;
+  font-family:times;
+  border:1px solid #ddd;
+  border-radius: 6px;
+  min-height:75px;
+  padding:15px;
+  
+}
+</style>
+</head>
+<body>
+  <div id="form" class="class">
+    <p>Route #:</p>
+    <select id="txt" type = "text">
+      <option value = "152">Addison & Campbell</option>
+      <option value = "49">Western & Addison</option>
+    </select>  
+      <button type ="button" id="btnSearch">Find my BUS!</button>     
       </div>
+    <div id ="results" class = class>
       
-      <div id="results">
-        
-      </div>
+    </div>
 
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
       <script>
-        
-        
-        var url = "https://data.cityofchicago.org/resource/rp42-fxjt.json";
-        $.ajax({
-          url: url,
-          method: 'GET',
-          data: { color: "BLK" , make: "FORD"}
-        }).done(function(data) {
+      /*global $*/
+        $(function() {
           
-          var clone;
           
-          $.each(data, function (i,v) {
-            clone = $("#towedVehicleTemplate").clone();
-            
-            console.log(clone);
-            clone.attr("id",v.plate);
-            clone.removeClass("template");
-            
-            clone.find(".plate").text(v.plate)
-            clone.find(".color").text(v.color);
-            clone.find(".tow_date").text(v.tow_date);
-            clone.find(".tow_facility_phone").text(v.tow_facility_phone);
-            clone.find(".tow_date").text(v.tow_date);
-            clone.find(".towed_to_address").text(v.towed_to_address);
-            clone.find(".mapLink").attr("href", "https://www.google.com/maps/place/" + v.towed_to_address);
-            
-            $("#results").append(clone);
-          })
-
-        }).fail(function(err) {
-          throw err;
+          var apiPassThruUrl = "https://polar-garden-75406.herokuapp.com/apiPassThru.php";
+          
+          var apiEndpoint = "http://ctabustracker.com/bustime/api/v2/getpredictions";
+          
+          $("btnSearch").on("click",function(){
+            $("#results").html("")
+          
+          
+          $.ajax({
+              url: apiPassThruUrl,
+              dataType: "json",
+              method: 'GET',
+              data: {"apiEndpoint": apiEndpoint,
+                      "key" : "CLZzynvbcUjhqG3z48ugxFeMi",
+                      "stpid": "12525,8417",
+                      "rt" : $("#txt").val(),
+                      "format":"json",
+                      
+                
+                      
+                      
+              }
+            }).done (function (data) {
+              console.log(data);
+               
+               
+                             $("body").append("<h1>Bus Routes</h1>" + "<hr>");
+             
+              $.each(data["bustime-response"]["prd"], function(i,v) {
+                  $("#results").append("<h2>Predictions</h2>"  +"Route #" + v.rt 
+                   +"<br>"+"Stop Id:"+ v.stpid 
+                   +"<br>"+"Time:" + v.prdtm
+                   +"<br>" +"ETA:"+ v.prdctdn + "min"
+                   +"<br>"+ v.stpnm 
+                   + "<br>" + v.rtdir
+                   +"<hr>"
+                   );
+                
+              });
+            });
         });
-        
-        
-      </script>
-
-
-    </body>
+      });  
+  
+</script>
+ 
+</body>
 </html>
