@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Find My Car!</title>
+        <style>
+            p, h1 {font-family: helvetica;}
+            p {font-size:1.5em;line-height:1.5em; margin-left: 24px;}
+            pre {font-size: 2em;}
+            
+            div {
+                background-color:green; 
+                border: 1px solid black; 
+                border-radius: 6px;
+                min-height:75px;
+                padding:15px;
+            }
+
+        </style>
+    </head>
+    <body>
+    <h1>Find My Car!</h1>
+    
+    <!-- div for instructions and form -->
+    <div id="form">
+        <p>
+            Enter your plate number to search City of Chicago tow records. 
+            <br>
+            Visit <a href="https://data.cityofchicago.org/Transportation/Towed-Vehicles/ygr5-vcbg">the Data Portal page for the towed vehicles dataset</a> to find a valid plate number.</p>
+        <input id="txtPlate" type="text" placeholder="Enter your License Plate"></input>
+        <button type="button" id="btnSearch" >Find My Car!</button>
+    </div>
+    
+    <!-- a div to store the results -->
+    <div id="results">
+        
+        
+        
+    </div>
+    
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+        /*
+            This script retrieves towed vehicle data for the entered plate
+        */
+        
+       
+        $(function () {    // don't execute code until DOM is ready
+            /*
+                most code should wait for the button click event,
+                but creating and setting some variables *can* be 
+                done when the page loads
+            */
+
+            // api endpoint for the towed vehicle data
+            var baseURL = 'https://data.cityofchicago.org/resource/ygr5-vcbg.json';
+            
+            // optional filters we're appending: plate
+            var filters = '?plate=';
+            
+            // the url; we'll append the plate number in button click
+            var url = baseURL + filters;   
+            
+            console.log (url);
+            
+            // start with button disabled
+            $("#btnSearch").attr("disabled", true);
+            
+            // enable button only if text in input box
+            $("#txtPlate").keyup(function(){   // change event doesn't work, so using keyup 
+                if ($("#txtPlate").val() == "") {   // if value is empty
+                    $("#btnSearch").attr("disabled", true)  // set disabled
+                }
+                else {
+                    $("#btnSearch").attr("disabled", false)
+                }
+            })
+            
+            
+            
+         
+           
+            // we want to get the data and display on button click
+            $("#btnSearch").on("click", function() {
+                
+                // each time we search, we need to clear the results
+                $("#results").html("");
+                
+                // get the input plate number
+                //   and append to url in getJSON call
+                var plateNum = $("#txtPlate").val();
+           
+                var urlWithParams = url + plateNum;
+                console.log(urlWithParams);  // verify that it's being created correctly
+           
+                // jQuery command to retrieve json data
+                
+                $.getJSON(urlWithParams)       // append the plateNum
+                    .done (function (data) {    // execute this function when getJSON is done
+                        
+                        console.log(data);
+                        
+                        var numRecords = data.length;  // the length of the array
+                        
+                        // notify of number of records
+                        var message = 
+                            "<p>Records found: "
+                            + numRecords
+                            + "</p>"
+                        
+                        $("#results").append(message);
+                        
+                        
+                        // only loop records if count > 0
+                        if (numRecords > 0) {
+                            // loop through the records
+                            $.each (data , 
+                                function (index, value) {
+                                    // append content to the body 
+                                    var html = "<h2>" 
+                                        + value.state + " " +value.plate 
+                                        + "</h2>"
+                                        + "<p>" 
+                                        + "Make: "
+                                        + value.make
+                                        + "<br>"
+                                        + "Inventory Number: "
+                                        + value.inventory_number
+                                        + "<br>Tow Date: "
+                                        + value.tow_date
+                                        + "<br>Towed to Address: "
+                                        + value.towed_to_address
+                                        + " <a href='https://www.google.com/maps/place/" 
+                                        + value.towed_to_address + " Chicago, IL'>"
+                                        + "Google Maps</a>"
+                                        + "<br>Tow Facility Phone: "
+                                        + value.tow_facility_phone
+                                        + "</p>";
+                                   
+                                   
+                                    $("#results").append(html);
+     
+                            
+                                
+                                }  // end of function
+                            
+                            ); // end of each loop                            
+                        
+                        }   // end of if statement
+
+                    })  // end of getJSON
+            
+            })  // end of button click event
+        
+        }) // end of jQuery wrapper
+        
+        
+    </script>
+    </body>
+</html>

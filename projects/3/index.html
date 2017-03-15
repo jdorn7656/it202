@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport" />
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <title>Article Search</title>
+        <style>
+            p, h1 {font-family: Times New Roman;}
+            p {font-size:2.5em;line-height:12.5em; margin-left: 34px;}
+            pre {font-size: 10em;}
+            h3 {
+                margin: 20px 20px 20px 20px;
+            }
+            a {
+                color: black;
+            }
+            .article {
+                border: 5px solid blue;
+                background-color: red;
+                cursor: pointer;
+                float: left;
+                width: auto;
+                margin: 8px 8px;
+                padding: 10px;
+                border-radius: 10px;
+            }
+            #search {
+                cursor: pointer;
+            }
+            #instructionsAndForm {
+                padding: 20px;
+                border: 20px solid green;
+                border-radius: 10px;
+                visibility: hidden;
+            }
+    </style>
+        </style>
+    </head>
+    <body>
+        <div id="instructionsAndForm">
+            Search by Keyword: <input autocomplete="off" id="searchBox" type="text" name="plate"><br>
+            <input disabled="disabled" id="search" type="button" value="Search">
+            Find what article you are looking forwith the click of a button.
+        </div>
+        <div id="results"></div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('#instructionsAndForm').css('visibility', 'visible');
+                $("#searchBox").keydown(function() {
+                    setTimeout(function() {
+                        if ($("#searchBox").val() == "") {
+                            $("#search").attr('disabled','disabled');
+                        } else {
+                            $("#search").removeAttr('disabled');
+                        }
+                    }, 25)
+                });
+                $('body').on('click', '#search', function(){
+                    var searchQuery = $('#searchBox').val();
+                    $('#results').html('<h3 style="margin-top: 10px;">Retrieving data...</h3>');
+                    $("#searchBox").val("");
+                    var url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+                    url += '?' + $.param({
+                      'api-key': "b94f11c8c1a643018d41080736975218",
+                      'q': searchQuery
+                    });
+                    $.ajax({
+                        url: url,
+                        method: 'GET',
+                    }).done(function(result) {
+                        $('#results').empty();
+                        var x = 0;
+                        $.each(result.response.docs, function(index, value) {
+                            x++;
+                            $('#results').append('<div class="article"><h3>' + (value.headline.name || value.headline.main) + '</h3>Type: ' + value.type_of_material + '<br><br>Publication Date: ' + value.pub_date + '<br><br>URL: <span class="address">' + value.web_url + '</span><br><br>Lead Paragraph: ' + value.lead_paragraph + '</div>');
+                        });
+                        $('#results').prepend('<h3 style="margin-top: 10px;">' + x + ' results for "' + searchQuery + '"<h3>');
+                    }).fail(function(err) {
+                        $('#results').html('<h3 style="margin-top: 10px;">No results for "' + searchQuery + '"<h3>');
+                        throw err;
+                    });
+                });
+                document.onkeydown = function(e) {
+                    if (e.keyCode == 13) {
+                        $('#search').click();
+                    }
+                };
+                $('#results').on('click', '.article', function(){
+                    window.open($(this).find(".address").html(), "_blank");
+                });
+            });
+        </script>
+    </body>
+</html>

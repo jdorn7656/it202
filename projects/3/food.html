@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple JSON Example</title>
+        <style>
+            p, h1 {font-family: helvetica;}
+            p {font-size:1.5em;line-height:1.5em; margin-left: 24px;}
+            pre {font-size: 2em;}
+            .Pass{background-color:Green;}
+            .Fail{background-color:red;}
+            .Out{background-color:yellow;}
+        </style>
+    </head>
+    <body>
+   
+            The Food Inspection data set at City of Chicago Data Portal (<a href="https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5">https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5</a>)  
+            Click the <strong>Export</strong> button and expand the <strong>SODA API</strong> panel to see the names of the data elements you'll be able to display.
+        </li>
+    </ul>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+        /*
+            This script retrieves food inspection data for zip 60618
+            for the 4th quarter of 2016 from the 
+            City of Chicago Data Portal
+            
+            It stores the returned results in a variable named inspections.
+            
+            This script doesn't update the DOM.
+        
+        
+        */
+        //  variable to hold the returned data
+        var inspections;
+        
+        // base URL to the food inspections data
+        var inspectionsBaseURL = 'https://data.cityofchicago.org/resource/cwig-ma7x.json';
+        
+        // optional filters we're appending - date range and zip
+        var filters = '?$where=inspection_date%20between%20%272016-10-01T00:00:00%27%20and%20%272017-01-01T00:00:00%27%20and%20zip=60618';
+        
+        // full URL
+        var inspectionsUrl = inspectionsBaseURL + filters;
+        
+        console.log (inspectionsUrl);
+        
+        $(
+            // jQuery command to retrieve json data
+            
+            $.getJSON(inspectionsUrl)
+                .done (function (data){ 
+                    
+                $.each(data,function(i,v){
+                    console.log(v.dba_name);
+                    $("body").append("<h2 class="+v.results+">"+v.dba_name+"</h2>"+"-"+v.results);});
+                
+                })
+            
+            
+        );
+        
+        
+    </script>
+    </body>
+</html>
