@@ -1,0 +1,98 @@
+<html>
+  <head>
+    <!-- Material Design Lite -->
+    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <!-- Material Design icon font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    <style>
+      .screen {display: none;}
+    </style>
+
+
+  </head>
+  <body>
+    <!-- Always shows a header, even in smaller screens. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <!-- Title -->
+          <span class="mdl-layout-title">Schedule App</span>
+          <!-- Add spacer, to align navigation to the right -->
+          <div class="mdl-layout-spacer"></div>
+          <!-- Navigation. We hide it in small screens. -->
+          <nav class="mdl-navigation mdl-layout--large-screen-only">
+
+          </nav>
+        </div>
+      </header>
+      <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">List of different schedues</span>
+        <nav class="mdl-navigation">
+          <a id="link1" class="mdl-navigation__link" href="#">Kelly's schedule</a>
+          <a id="link2" class="mdl-navigation__link" href="#">John's schedule</a>
+          <a id="link3" class="mdl-navigation__link" href="#">The Kid's schedule</a>
+        </nav>
+      </div>
+      <main class="mdl-layout__content">
+        <div id="screen1" class="screen page-content"><h1>Kelly's schedule</h1><ul style="list-style-type:disc">
+  <li>6:00-Wakeup</li>
+  <li>6:30-Leave for work and drop off kids</li>
+  <li>8:00-Work starts</li>
+  <li>12:00-Lunch</li>
+  <li>3;15-Work ends</li>
+  <li>3:45-Go pick up kids</li>
+  <li>4:30-Go home</li>
+</ul>  
+</div>
+        <div id="screen2" class="screen page-content"><h1>John's schedule</h1><ul style="list-style-type:disc">
+  <li>6:00-Wake up</li>
+  <li>6:30-Go to school</li>
+  <li>8:00-School starts</li>
+  <li>11:50-Lunch</li>
+  <li>3:15-School ends</li>
+  <li>3:30-Do homework</li>
+  <li>5:00-Go home</li>
+</ul>  
+</div>
+        <div id="screen3" class="screen page-content"><h1>The Kid's schedule</h1><ul style="list-style-type:disc">
+  <li>6:00-Wake up</li>
+  <li>7:00-Go to daycare</li>
+  <li>11:00-Take a nap</li>
+  <li>1:00-Lunch</li>
+  <li>3:45-Mom picks us up</li>
+  <li>4:30-Go home</li>
+</ul>  
+</div>
+      </main>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+      $(function() {
+        $("#screen1").show();
+        
+        $("#link1").on("click", function(){
+          $(".screen").hide();
+          $("#screen1").show();
+        });
+        
+        $("#link2").on("click", function(){
+          $(".screen").hide();
+          $("#screen2").show();
+        });
+        
+        $("#link3").on("click", function(){
+          $(".screen").hide();
+          $("#screen3").show();
+        });
+        
+        
+        
+      });
+      
+      
+    </script>
+  </body>
+</html>
