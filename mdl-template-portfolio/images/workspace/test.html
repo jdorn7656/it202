@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/dexie@1.5.1/dist/dexie.js"></script>
+  </head>
+  <body>
+
+    <script>
+          
+      var db = new Dexie("test");
+        db.version(1).stores({
+          employees: '++id,name,department,title,salary'
+        });
+        
+    </script>
+  </body>
+</html>

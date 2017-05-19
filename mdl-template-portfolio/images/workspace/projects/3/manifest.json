@@ -1,0 +1,15 @@
+{
+  "short_name": "3 Page Site",
+  "name": "3 Page Site",
+  "icons": [
+    {
+      "src":"lanetechlogo.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "index.html?utm_source=homescreen",
+  "background_color": "",
+  "Theme_color": "",
+  "display": "standalone"
+}

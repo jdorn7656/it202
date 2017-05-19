@@ -1,0 +1,147 @@
+<html>
+
+<head>
+	<!-- Material Design Lite -->
+	<script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+	<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+	<!-- Material Design icon font -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+	<title>Employees</title>
+	<script>
+		$(document).ready(function() {
+			var db = new Dexie("employeeDB");
+			db.version(1).stores({
+				employees: '++id,name,department,title,salary'
+			});
+			db.employees.count().then(function(count) {
+				var employees = [];
+				if (count == 0) {
+					$.getJSON("https://data.cityofchicago.org/resource/tt4n-kn4t.json?department=CITY%20COUNCIL").done(function(data) {
+						$.each(data, function(i, v) {
+							db.employees.add({
+								name: v.name,
+								department: v.department,
+								title: v.job_titles,
+								salary: v.employee_annual_salary
+							}).then(function() {
+								employees.push({
+									name: v.name,
+									department: v.department,
+									title: v.job_titles,
+									salary: v.employee_annual_salary
+								});
+								if (employees.length == data.length) {
+									employees = [];
+									db.employees.where("name").startsWith("").each(function(employee) {
+										employees.push(employee);
+									}).then(function() {
+										$("#employeeDisplay").empty();
+										$.each(employees, function(i, v) {
+											$("#employeeDisplay").append('<div style="padding: 3px; margin: 3px; border: 2px solid black; border-radius: 5px;"><h4>' + v.name + "</h4><p>Salary: $" + v.salary + "</p></div>");
+										});
+									});
+								}
+							});
+						});
+					});
+				}
+				else {
+					db.employees.where("name").startsWith("").each(function(employee) {
+						employees.push(employee);
+					}).then(function() {
+						$("#employeeDisplay").empty();
+						$.each(employees, function(i, v) {
+							$("#employeeDisplay").append('<div style="padding: 3px; margin: 3px; border: 2px solid black; border-radius: 5px;"><h4>' + v.name + "</h4><p>Salary: $" + v.salary + "</p></div>");
+						});
+					});
+				}
+			});
+			$("#search").on("click", function() {
+				var employees = [];
+				db.employees.where("name").startsWith($("#searchField").val().toUpperCase()).each(function(employee) {
+					employees.push(employee);
+				}).then(function() {
+					$("#employeeDisplay").empty();
+					$.each(employees, function(i, v) {
+						$("#employeeDisplay").append('<div style="padding: 3px; margin: 3px; border: 2px solid black; border-radius: 5px;"><h4>' + v.name + "</h4><p>Salary: $" + v.salary + "</p></div>");
+					});
+				});
+			});
+			$("#addEmployee").on("click", function() {
+				db.employees.add({
+					name: $("#nameField").val(),
+					department: $("#departmentField").val(),
+					title: $("#titleField").val(),
+					salary: $("#salaryField").val()
+				}).then(function() {
+					var employees = [];
+					db.employees.where("name").startsWith("").each(function(employee) {
+						employees.push(employee);
+					}).then(function() {
+						$("#employeeDisplay").empty();
+						$.each(employees, function(i, v) {
+							$("#employeeDisplay").append('<div style="padding: 3px; margin: 3px; border: 2px solid black; border-radius: 5px;"><h4>' + v.name + "</h4><p>Salary: $" + v.salary + "</p></div>");
+						});
+					});
+				});
+			});
+			$("#resetDB").on("click", function() {
+				db.employees.where("name").startsWith("").delete();
+				window.location.reload();
+			});
+		});
+	</script>
+</head>
+
+<body>
+	<!-- Simple header with fixed tabs. -->
+	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header
+                mdl-layout--fixed-tabs">
+		<header class="mdl-layout__header">
+			<div class="mdl-layout__header-row">
+				<!-- Title --><span class="mdl-layout-title">Employee Finder</span> </div>
+			<!-- Tabs -->
+			<div class="mdl-layout__tab-bar mdl-js-ripple-effect"> <a id="fixed-tab-1" href="javascript:$('#viewScreen').addClass('is-active');$('#addScreen').removeClass('is-active');$('#resetScreen').removeClass('is-active');$('#smallNav, .mdl-layout__obfuscator').removeClass('is-visible');$('.mdl-layout__tab').removeClass('is-active');$('#fixed-tab-1').addClass('is-active');"
+					class="mdl-layout__tab is-active">All Employees</a> <a id="fixed-tab-2" href="javascript:$('#viewScreen').removeClass('is-active');$('#addScreen').addClass('is-active');$('#resetScreen').removeClass('is-active');$('#smallNav, .mdl-layout__obfuscator').removeClass('is-visible');$('.mdl-layout__tab').removeClass('is-active');$('#fixed-tab-2').addClass('is-active');"
+					class="mdl-layout__tab">Add on</a> <a id="fixed-tab-3" href="javascript:$('#viewScreen').removeClass('is-active');$('#addScreen').removeClass('is-active');$('#resetScreen').addClass('is-active');$('#smallNav, .mdl-layout__obfuscator').removeClass('is-visible');$('.mdl-layout__tab').removeClass('is-active');$('#fixed-tab-3').addClass('is-active');"
+					class="mdl-layout__tab">Clear</a> </div>
+		</header>
+		<div id="smallNav" class="mdl-layout__drawer"> <span class="mdl-layout-title">Employee Finder</span>
+			<nav class="mdl-navigation"> <a id="viewA" class="mdl-navigation__link" href="javascript:$('#viewScreen').addClass('is-active');$('#addScreen').removeClass('is-active');$('#resetScreen').removeClass('is-active');$('#smallNav, .mdl-layout__obfuscator').removeClass('is-visible');$('.mdl-layout__tab').removeClass('is-active');$('#fixed-tab-1').addClass('is-active');">View</a>				<a id="addA" class="mdl-navigation__link" href="javascript:$('#viewScreen').removeClass('is-active');$('#addScreen').addClass('is-active');$('#resetScreen').removeClass('is-active');$('#smallNav, .mdl-layout__obfuscator').removeClass('is-visible');$('.mdl-layout__tab').removeClass('is-active');$('#fixed-tab-2').addClass('is-active');">Add</a>				<a id="resetA" class="mdl-navigation__link" href="javascript:$('#viewScreen').removeClass('is-active');$('#addScreen').removeClass('is-active');$('#resetScreen').addClass('is-active');$('#smallNav, .mdl-layout__obfuscator').removeClass('is-visible');$('.mdl-layout__tab').removeClass('is-active');$('#fixed-tab-3').addClass('is-active');">Reset</a>				</nav>
+		</div>
+		<main class="mdl-layout__content">
+			<section id="viewScreen" class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
+				<div class="page-content">
+					<!-- Your content goes here -->
+					<center>
+						<form style="margin: 0px;" action="#">
+							<div class="mdl-textfield mdl-js-textfield"> <input class="mdl-textfield__input" type="text" id="searchField"> <label class="mdl-textfield__label" for="sample1">Search</label> </div>
+						</form> <button id="search" style="margin: 5px; width: calc(100% - 10px)" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Search</button></center>
+					<div id="employeeDisplay"></div>
+				</div>
+			</section>
+			<section id="addScreen" class="mdl-layout__tab-panel" id="fixed-tab-2">
+				<div class="page-content">
+					<!-- Your content goes here -->
+					<center>
+						<form style="margin: 0px;" action="#">
+							<div class="mdl-textfield mdl-js-textfield"> <input class="mdl-textfield__input" type="text" id="nameField"> <label class="mdl-textfield__label" for="sample1">Name</label> </div>
+							<div class="mdl-textfield mdl-js-textfield"> <input class="mdl-textfield__input" type="text" id="departmentField"> <label class="mdl-textfield__label" for="sample1">Department</label> </div>
+							<div class="mdl-textfield mdl-js-textfield"> <input class="mdl-textfield__input" type="text" id="titleField"> <label class="mdl-textfield__label" for="sample1">Title</label> </div>
+							<div class="mdl-textfield mdl-js-textfield"> <input class="mdl-textfield__input" type="text" id="salaryField"> <label class="mdl-textfield__label" for="sample1">Pay</label> </div>
+						</form> <button id="addEmployee" style="margin: 5px; width: calc(100% - 10px)" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Add Member</button></center>
+				</div>
+			</section>
+			<section id="resetScreen" class="mdl-layout__tab-panel" id="fixed-tab-3">
+				<div class="page-content">
+					<!-- Your content goes here -->
+					<center><button id="resetDB" style="margin: 5px; width: calc(100% - 10px)" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Reset Employees</button></center>
+				</div>
+			</section>
+		</main>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,142 @@
+<html>
+
+<head>
+  <title>IndexedDB Lab</title>
+  <!-- Material Design Lite -->
+  <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+  <!-- Material Design icon font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+</head>
+
+<body>
+
+  <script>
+    var db = new Dexie("employeeDB");
+    db.version(1).stores({
+      employees: '++id,name,department,title,salary'
+    });
+
+    db.employees.count().then(function(count) {
+      console.log(count);
+
+      var url = "https://data.cityofchicago.org/resource/tt4n-kn4t.json";
+
+      if (count == 0) {
+        $.ajax({
+          url: url,
+          method: 'GET',
+          data: {
+            department: "CITY COUNCIL"
+          }
+        }).done(function(data) {
+
+          console.log(data);
+
+          $.each(data, function(i, v) {
+            db.employees.add({
+              name: v.name,
+              title: v.job_titles,
+              salary: v.employee_annual_salary,
+              department: v.department
+            });
+          });
+
+        });
+      }
+    });
+
+    function displayEmployees() {
+      $("#output1").html("");
+      // db.employees.each(function (employee) {
+      //   var html = "<strong>" + employee.name + "</strong>";
+      //   html += "<br>" + employee.department + "<br><br>";
+      //   $("#output1").append(html);
+      // });
+
+      db.employees
+        .where('name')
+        .startsWithIgnoreCase($("#sample1").val())
+        .each(function(employee) {
+          console.log(employee.name);
+          var html = "<strong>" + employee.name + "</strong>";
+          html += "<br>" + employee.department + "<br><br>";
+          $("#output1").append(html);
+        });
+
+    }
+    
+    function addValue() {
+      db.employees.add({
+        name: $("#sample2").val(),
+        title: $("#sample3").val(),
+        salary: $("#sample4").val(),
+        department: $("#sample5").val()
+      });
+    }
+    
+  </script>
+
+  <!-- Simple header with fixed tabs. -->
+  <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header
+                mdl-layout--fixed-tabs">
+    <header class="mdl-layout__header">
+      <div class="mdl-layout__header-row">
+        <!-- Title -->
+        <span class="mdl-layout-title">Title</span>
+      </div>
+      <!-- Tabs -->
+      <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+        <a href="#fixed-tab-1" class="mdl-layout__tab is-active">Tab 1</a>
+        <a href="#fixed-tab-2" class="mdl-layout__tab">Tab 2</a>
+        <a href="#fixed-tab-3" class="mdl-layout__tab">Tab 3</a>
+      </div>
+    </header>
+    <div class="mdl-layout__drawer">
+      <span class="mdl-layout-title">Title</span>
+    </div>
+    <main class="mdl-layout__content">
+      <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
+        <div class="page-content">
+          <center>
+            <!-- Simple Textfield -->
+            <form action="#">
+              <div class="mdl-textfield mdl-js-textfield">
+                <input class="mdl-textfield__input" type="text" id="sample1">
+                <label class="mdl-textfield__label" for="sample1">Text...</label>
+              </div>
+            </form>
+            <button type="button" onclick="displayEmployees()">Search</button>
+            <div id="output1"></div>
+          </center>
+        </div>
+      </section>
+      <section class="mdl-layout__tab-panel" id="fixed-tab-2">
+        <div class="page-content">
+          <center>
+            <!-- Simple Textfield -->
+            <form action="#">
+              <div class="mdl-textfield mdl-js-textfield">
+                <input class="mdl-textfield__input" type="text" id="sample2" placeholder="Name">
+                <input class="mdl-textfield__input" type="text" id="sample3" placeholder="Title">
+                <input class="mdl-textfield__input" type="text" id="sample4" placeholder="Salary">
+                <input class="mdl-textfield__input" type="text" id="sample5" placeholder="Department">
+              </div>
+            </form>
+            <button type="button" onclick="addValue()">Add Employee</button>
+          </center>
+        </div>
+      </section>
+      <section class="mdl-layout__tab-panel" id="fixed-tab-3">
+        <div class="page-content">
+          <!-- Your content goes here -->
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+
+</html>

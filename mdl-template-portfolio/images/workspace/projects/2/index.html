@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CTA Bus Finder</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+      <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+      <!-- Material Design icon font -->
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+      
+      <style>
+        #text{border-radius: 25px; border: 2px solid black; background-color: #1aa3ff; width: 800px;}
+        
+        body {
+            padding: 20px;
+            background: #fafafa;
+            position: relative;
+        }
+        
+      </style>
+      <link rel="manifest" href="./manifest.json">
+        <meta name="msapplication-TileImage" content="https://www.google.com/logos/doodles/2017/37th-anniversary-of-komodo-national-park-6197054943526912.4-hp.jpg">
+        <meta name="msapplication-TileColor" content="#2F3BA2">
+  </head>
+  <body onload="addStoredData()">
+    <!-- Simple header with fixed tabs. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header
+                mdl-layout--fixed-tabs">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <!-- Title -->
+          <span class="mdl-layout-title">Find a bus near Lane Tech</span>
+        </div>
+        <!-- Tabs -->
+        <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+          <a href="#fixed-tab-1" class="mdl-layout__tab is-active">Search</a>
+          <a href="#fixed-tab-2" class="mdl-layout__tab">View Routes</a>
+          <a href="#fixed-tab-3" class="mdl-layout__tab">Add Route</a>
+        </div>
+      </header>
+      <main class="mdl-layout__content">
+        <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
+          <div class="page-content">
+            <div class="page-content">
+              <br>
+              <br>
+              <center>
+              <select name="Stops" id="stopChoice">
+                <option value="8417">Western (Northbound)</option>
+                <option value="8195">Western (Southbound)</option>
+                <option value="12527">Addison (Eastbound)</option>
+                <option value="12569">Addison (Westbound)</option>
+              </select>
+        
+              <button type="button" onclick="findPredictions();" >Find Busses</button>
+              </center>
+        
+             <center><div id = "output"></div></center>
+        
+            </div>
+          </div>
+        </section>
+        <section class="mdl-layout__tab-panel" id="fixed-tab-2">
+          <div class="page-content">
+            <center>
+              <br>
+              <br>
+              <button type="button" onclick="showStoredStops();" >View Current Routes</button>
+              <br>
+              <br>
+              <div id="viewRoutes"></div>
+            </center>
+          </div>
+        </section>
+        <section class="mdl-layout__tab-panel" id="fixed-tab-3">
+          <div class="page-content">
+            <br>
+            <br>
+            <center>
+            <input type="text" name="RouteName" id="stopName" placeHolder="Enter a stop name">
+            <br>
+            <input type="text" name="routeValue" id="stopID" placeHolder="Enter the stop ID">
+            <br>
+            <button type="button" onclick="addStop();" >Add Stop</button>
+            </center>
+          </div>
+        </section>
+      </main>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+      
+    <script>
+      function findPredictions() {
+        $(function() {
+          
+          $("#output").html("");
+          
+          var apiPassThruUrl = "https://polar-garden-75406.herokuapp.com/apiPassThru.php";
+            
+            var apiEndpoint = "http://ctabustracker.com/bustime/api/v2/getpredictions";
+          
+          $.ajax({
+              url: apiPassThruUrl,
+              dataType: "json",
+              method: 'GET',
+              data: {"apiEndpoint": apiEndpoint,
+                      "key" : "R8ddnuEYzJvYppDLAFpRWbh9e",
+                      "stpid" : $("#stopChoice").val(),
+                      "format":"json"}
+            }).done (function (data) {
+              console.log(data);
+              $("#output").append("<br><h2>Predictions</h2>");
+             
+              $.each(data["bustime-response"]["prd"], function(i,v) {
+                  var html = "<div id= text><h3>Stop Name: " + v.stpnm + "</h3><h3>Direction: " + v.rtdir + 
+                  "</h3><h3>Minutes Away: " + v.prdctdn + "</h3>" + "<h3>Distance Away: " + v.dstp + 
+                  " feet</h3><h3>Vehicle Id: " + v.vid + "</h3></div><br>";
+                  $("#output").append(html);
+              });
+
+            });
+            
+        });
+      }
+    </script>
+
+    <script>
+      var x = document.getElementById("stopChoice");
+      var option = document.createElement("option");
+          
+      var db = new Dexie("stopDB");
+      db.version(1).stores({
+        stops: '++name,stpid'
+      });
+      
+      function addStop() {
+        db.stops.add({
+          name: $("#stopName").val(),
+          stpid: $("#stopID").val(),
+        });
+        option = document.createElement("option");
+        option.text = $("#stopName").val();
+        option.value = $("#stopID").val();
+        x.add(option);
+      }
+      
+      function addStoredData(){
+          x = document.getElementById("stopChoice");
+          option = document.createElement("option");
+          db.stops
+          .each(function(stop)
+          {
+            option = document.createElement("option");
+            option.text = stop.name;
+            option.value = stop.stpid;
+            x.add(option);
+            //console.log(option.text);
+          });
+      }
+      
+      function showStoredStops(){
+        var index = 0;
+        $("#viewRoutes").html("");
+        var storedRoutes = "";
+        var stopName = "";
+        db.stops
+        .each(function(stop){
+          stopName = "\"" + stop.name + "\"";
+          storedRoutes = "Stop Name: " + stop.name + " Stop ID: " + stop.stpid + " " + "<button type=button " + "onclick=removeStop(" + stopName + "); >Remove Stop</button>"+ "<br>";
+          $("#viewRoutes").append(storedRoutes);
+          index += 1;
+        });
+      }
+      
+      function removeStop(sName){
+        db.stops.delete(sName);
+        showStoredStops();
+      }
+    </script>
+  </body>
+</html>

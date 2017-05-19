@@ -1,0 +1,98 @@
+<html>
+  <head>
+    <!-- Material Design Lite -->
+    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <!-- Material Design icon font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel=manifest href=manifest.json>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Weather PWA">
+    <link rel="apple-touch-icon" href="images/icons/icon-152x152.png">
+    <meta name="msapplication-TileImage" content="images/icons/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#2F3BA2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3 Page Site</title>
+    <style>
+      .pics{display:inline-block;}
+    </style>
+  </head>
+  <body>
+    <!-- Simple header with scrollable tabs. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <!-- Title -->
+          <span class="mdl-layout-title">3 Page Site</span>
+        </div>
+        <!-- Tabs -->
+        <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+          <a href="#scroll-tab-1" class="mdl-layout__tab is-active">Family</a>
+          <a href="#scroll-tab-2" class="mdl-layout__tab">Dogs</a>
+          <a href="#scroll-tab-3" class="mdl-layout__tab">Work</a>
+        </div>
+      </header>
+      <main class="mdl-layout__content">
+        <section class="mdl-layout__tab-panel is-active" id="scroll-tab-1">
+          <div class="page-content">
+            <center>
+            <h1>Family</h1>
+            <img src="mom_dad.JPG">
+            <br>
+            <h1>Brendan and Jami</h1>
+            <img class="pics" src="brendan.JPG">
+            <img class="pics" src="jami.JPG">
+            </center>
+          </div>
+        </section>
+        <section class="mdl-layout__tab-panel" id="scroll-tab-2">
+          <div class="page-content">
+            <div id="dogPics">
+              <center>
+                <h1>Marcello and Leo</h1>
+                <img class = "pics" src="marcello.JPG">
+                <img class = "pics" src="leo.JPG">
+                <br>
+                <br>
+                <img src="marcello_leo.JPG">
+                <br>
+              </center>
+            </div>
+          </div>
+        </section>
+        <section class="mdl-layout__tab-panel" id="scroll-tab-3">
+          <div class="page-content">
+            <br>
+            <center>
+              <img src="http://www.creativescholarspreschool.com/images/CSP_Logo.png">
+              <br>
+              <br>
+              <h4>Business Hours</h4>
+              <p>Monday: 7:30AM - 6:00PM</p>
+              <p>Tuesday: 7:30AM - 6:00PM</p>
+              <p>Wednesday: 7:30AM - 6:00PM</p>
+              <p>Thursday: 7:30AM - 6:00PM</p>
+              <p>Friday: 7:30AM - 6:00PM</p>
+              <br>
+              <br>
+              <h4>Location on google map</h4>
+              <a href="https://www.google.com/maps?q=creative+scholars+preschool+logo&ion=1&espv=2&bav=on.2,or.&bvm=bv.150475504,d.amc&biw=1680&bih=833&dpr=2&um=1&ie=UTF-8&sa=X&ved=0ahUKEwjHsp7l2OzSAhWT2YMKHZbiBIUQ_AUICCgD">Click here</a>
+            </center>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script>
+      if ('serviceWorker' in navigator) {
+        console.log("Will the service worker register?");
+        navigator.serviceWorker.register('service-worker.js')
+          .then(function(reg){
+            console.log("Yes, it did.");
+          }).catch(function(err) {
+            console.log("No it didn't. This happened: ", err)
+          });
+      }
+    </script>
+  </body>
+</html>

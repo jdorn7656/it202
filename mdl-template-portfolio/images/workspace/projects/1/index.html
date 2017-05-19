@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Find CTA Train Station</title>
+        <style>
+            body {background-color: #C0C0C0;}
+            p, h1 {font-family: helvetica;}
+            p {font-size:1.5em;line-height:1.5em; margin-left: 24px;}
+            pre {font-size: 2em;}
+            .red {background-color: red;}
+            .blue {background-color: blue;}
+            .green {background-color: green;}
+            .brown {background-color: brown;}
+            .purple {background-color: purple;}
+            .yellow {background-color: yellow;}
+            .pink {background-color: pink;}
+            .orange {background-color: orange;}
+            body { 
+                background-image: url('http://www.chicago-l.org/maps/track/NavMap.jpg');
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                background-position: right top;
+            }
+            
+            
+        </style>
+    </head>
+    <body>
+    <h1>Find CTA Train Station</h1>
+    <h2>By Brendan Allen, Sam Barouch</h2>
+    
+        <p>
+            Enter a Chicago street to find different train stops.<br>(Good test inputs: "Western", "California" or "Addison")
+        </p>
+        <input id="inputBox" type="text" placeholder="Enter a train station"></input>
+        <button type="button" onclick="myFunction();" >Find Stops!</button>
+        <br>
+        <br>
+        <section id = "text"></section>
+    
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+      
+    <script>
+        function myFunction(){
+            
+        $("#text").html("");
+        
+        var name = document.getElementById("inputBox");
+        var nameFilters = name.value;
+        
+        var stationsURL = 'https://data.cityofchicago.org/resource/8mj8-j3c4.json';
+        
+        
+        var filters = '?station_name=' + nameFilters;
+        
+        
+        var stationsFinalURL = stationsURL + filters;
+        
+        console.log (stationsFinalURL);
+        i = 0;
+            
+            
+            $.getJSON(stationsFinalURL)
+                .done (function (data) {
+                    
+                    console.log(data);
+                    $.each(data, function(i, v){
+                        var html = "<div id = " + i + ">" +  "<h2>Train Stop: " + v.stop_name + "</h2>" + 
+                        "<h2>Train Station: " + v.station_descriptive_name + "</h2>" + "<h2>Direction: " + v.direction_id + "</h2>" + "<h2>" + 
+                        'See Stop on Google Map: <a href= "https://www.google.com/maps/place/' + v.location.coordinates[1] + "," + v.location.coordinates[0] + '"> Here</a>' + 
+                        "</h2>" + "</div>" + "<br>";
+
+                        $("#text").append(html);
+                        $("div").css("border-radius", "25px");
+                        $("div").css("border", "2px solid black");
+                        $("div").css("width", "825px")
+                        if (v.red == true)
+                        {
+                            $("#" + i).addClass("red");
+                        }
+                        else if (v.blue == true)
+                        {
+                            $("#" + i).addClass("blue");
+                        }
+                        else if (v.g == true)
+                        {
+                            $("#" + i).addClass("green");
+                            console.log(v.g)
+                        }
+                        else if (v.brn == true)
+                        {
+                            $("#" + i).addClass("brown");
+                        }
+                        else if (v.p == true)
+                        {
+                            $("#" + i).addClass("purple");
+                        }
+                        else if (v.y == true)
+                        {
+                            $("#" + i).addClass("yellow");
+                        }
+                        else if (v.pnk == true)
+                        {
+                            $("#" + i).addClass("pink");
+                        }
+                        else if (v.o == true)
+                        {
+                            $("#" + i).addClass("orange");
+                        }
+                        i++;
+                    });
+                });
+        }
+    </script>
+    </body>
+</html>
